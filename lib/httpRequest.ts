@@ -37,7 +37,6 @@ export const httpRequest = async (
     }
   }
 
-  // 🔹 Gọi API chính
   let res = await fetch(`${envConfig.NEXT_PUBLIC_URL}${url}`, {
     method,
     headers,
@@ -45,11 +44,9 @@ export const httpRequest = async (
     next: options?.nextConfig,
   })
 
-  // 🔁 Nếu hết hạn access token
   if (res.status === 401 && refreshToken) {
     const refreshRes = await fetch(`${envConfig.NEXT_PUBLIC_URL}/api/auth/refresh`, {
       method: "POST",
-      // credentials: "include",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${refreshToken}`,
@@ -57,7 +54,6 @@ export const httpRequest = async (
     })
 
     if (refreshRes.status === 200) {
-      // ⚡ Retry request sau khi refresh thành công
       res = await fetch(`${envConfig.NEXT_PUBLIC_URL}${url}`, {
         method,
         headers,
@@ -65,7 +61,6 @@ export const httpRequest = async (
         next: options?.nextConfig,
       })
     } else {
-      // Refresh token cũng hết hạn
       return { status: 401, data: { message: "Token expired, please login again" } }
     }
   }
