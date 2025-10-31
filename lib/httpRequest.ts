@@ -5,7 +5,6 @@ type HttpMethod = "GET" | "POST" | "PUT" | "DELETE"
 
 interface RequestOptions {
   contentType?: string
-  customBearer?: string
   body?: BodyInit | Record<string, any>
   nextConfig?: RequestInit["next"]
 }
@@ -19,11 +18,11 @@ export const httpRequest = async (
   const accessToken = cookieStore.get("access_token")?.value
   const refreshToken = cookieStore.get("refresh_token")?.value
 
-  const contentType = options?.contentType ?? "application/json"
-  const bearerToken = options?.customBearer ?? accessToken
 
-  const headers: HeadersInit = {}
-  if (bearerToken) headers["Authorization"] = `Bearer ${bearerToken}`
+  const contentType = options?.contentType ?? "application/json"
+  const headers: HeadersInit = {
+    "Authorization": `Bearer ${accessToken}`,
+  }
   if (contentType && !(options?.body instanceof FormData)) {
     headers["Content-Type"] = contentType
   }
